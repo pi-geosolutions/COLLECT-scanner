@@ -49,7 +49,7 @@ public class ScannerImpl implements Scanner{
 	         filecontent.readFile(file);
 	         
 	         filecontent.print();
-	         dbPublisher.publish(filecontent, "collect.c_meteo_pluiesquot");
+	         dbPublisher.publish("collect.c_meteo_pluiesquot", filecontent.getFieldNames(), filecontent.getData());
 	      }
 		
 	}

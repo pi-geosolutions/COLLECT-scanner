@@ -19,6 +19,7 @@ public class CsvContent {
 	private char csv_quotechar;
 	private int csv_skiplines;
 	private List<String> ignoreValues;
+	private File file;
 
 	public CsvContent(char csv_separator, char csv_quotechar, int csv_skiplines) {
 		this.csv_separator = csv_separator;
@@ -27,6 +28,7 @@ public class CsvContent {
 	}
 
 	public void readFile(File file) {
+		this.file=file;
 		try {
 			CSVReader reader = new CSVReader(new FileReader(file), csv_separator, csv_quotechar, csv_skiplines);
 			List<String[]> content = reader.readAll();
@@ -74,6 +76,15 @@ public class CsvContent {
 	
 	public List<String> getNextRow() {
 		return this.popRow(0);
+	}
+	
+	public List<List<String>> getData() {
+		return this.data;
+	}
+	
+	public String filename2tablename() {
+		String tablename="";
+		return tablename;
 	}
 
 	/*
