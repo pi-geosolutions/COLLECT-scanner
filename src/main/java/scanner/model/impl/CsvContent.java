@@ -12,6 +12,7 @@ import java.util.List;
 import com.opencsv.CSVReader;
 
 public class CsvContent {
+	
 	private List<String> headers;
 	private List<List<String>> data = new ArrayList<List<String>>();
 
@@ -90,29 +91,32 @@ public class CsvContent {
 	/*
 	 * For debugging purpose
 	 */
-	public void print() {
+	public String print() {
+		String out = "Reading CSV from file "+file.getName()+"\n \t\t";
 		if (headers == null) {
-			System.out.print("headers are null");
+			out += "headers are null";
 		} else {
 			Iterator<String> it = headers.iterator();
 			while (it.hasNext()) {
-				System.out.print(it.next() + ":");
+				out += it.next() + " | ";
 			}
-			System.out.println("");
+			out += "\n \t\t";
 		}
 		if (data == null) {
-			System.out.print("content is null");
+			out += "content is null";
 		} else {
 			Iterator<List<String>> it = data.iterator();
 			while (it.hasNext()) {
 				String[] line = it.next().toArray(new String[0]);
 				for (int i = 0; i < line.length; i++) {
-					System.out.print(line[i] + ":");
+					//System.out.print(line[i] + ":");
+					out += line[i] + " | ";
 				}
-				System.out.println("");
+				out += "\n \t\t";
 
 			}
 		}
+		return out;
 
 	}
 

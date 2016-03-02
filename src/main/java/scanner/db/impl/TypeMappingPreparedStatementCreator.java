@@ -11,10 +11,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.util.StringUtils;
 
+import scanner.model.impl.CsvContent;
+
 public class TypeMappingPreparedStatementCreator implements PreparedStatementCreator {
+
+	private static final Logger logger = LoggerFactory.getLogger(TypeMappingPreparedStatementCreator.class);
 
 	private String tablename;
 	private List<String> headers;
@@ -46,12 +52,6 @@ public class TypeMappingPreparedStatementCreator implements PreparedStatementCre
 				e.printStackTrace();
 			}
 		}
-		/*
-		 * mesure.setInt(1, bean.getIdMesure()); mesure.setInt(2,
-		 * bean.getCodeStation()); mesure.setDate(3, new
-		 * java.sql.Date(bean.getDateMesure().getTime())); mesure.setInt(4,
-		 * bean.getPluiemm());
-		 */
 		return ps;
 	}
 
@@ -60,7 +60,7 @@ public class TypeMappingPreparedStatementCreator implements PreparedStatementCre
 				+ StringUtils.collectionToDelimitedString(headers, "\",\"") + "\") VALUES ";
 		req += org.apache.commons.lang3.StringUtils.repeat(nthQMarksList(headers.size()) + ",", data.size() - 1);
 		req += nthQMarksList(headers.size()) + ";";
-		System.out.println(req);
+		logger.debug("INSERT request: \n \t "+req);
 		return req;
 	}
 
@@ -73,27 +73,30 @@ public class TypeMappingPreparedStatementCreator implements PreparedStatementCre
 
 	private int setDataRow(List<String> row, PreparedStatement ps, int psSetIndex) throws NumberFormatException, SQLException, ParseException {
 		int rowindex = 0;
-		System.out.print("row : ");
+		String log = "Inserting row: "; 
 		for (String value : row) {
 			int valuetype = getValueType(value, rowindex);
-			System.out.print(" "+value+"("+valuetype+")("+psSetIndex+") ");
+			log += " "+value+"("+valuetype+")("+psSetIndex+") ";
 			setValue(value, valuetype, psSetIndex, ps);
 			rowindex++;
 			psSetIndex++;
 		}
-		System.out.println("");
+		logger.debug(log);
 		return psSetIndex;
 	}
 
 	private void setValue(String value, int valuetype, int index, PreparedStatement ps) throws NumberFormatException, SQLException, ParseException {
 		switch (valuetype) {
 		case 4:
+			logger.debug("Parsing "+value+" as integer");
 			ps.setInt(index, Integer.parseInt(value));
 			break;
 		case 91:
+			logger.debug("Parsing "+value+" as date");
 			ps.setDate(index, this.parseDate(value));
 			break;
 		default:
+			logger.debug("Parsing "+value+" as string");
 			ps.setString(index, value);
 		}
 
