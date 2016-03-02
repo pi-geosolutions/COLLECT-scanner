@@ -9,9 +9,14 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.opencsv.CSVReader;
 
 public class CsvContent {
+
+	private static final Logger logger = LoggerFactory.getLogger(CsvContent.class);
 	
 	private List<String> headers;
 	private List<List<String>> data = new ArrayList<List<String>>();
@@ -136,7 +141,7 @@ public class CsvContent {
 	}
 
 	private void purgeValue(String name) {
-		System.out.println("purging value "+name);
+		logger.debug("purging value "+name);
 		int index = headers.indexOf(name);
 		if (index>=0) {
 			// Remove from headers list

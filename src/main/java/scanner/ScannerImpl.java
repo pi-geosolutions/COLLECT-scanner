@@ -6,9 +6,9 @@ import java.util.Iterator;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.event.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 import scanner.db.DbPublisher;
@@ -17,7 +17,7 @@ import scanner.model.impl.CsvContent;
 @Component
 public class ScannerImpl implements Scanner{
 
-	private static final Logger logger = LoggerFactory.getLogger(CsvContent.class);
+	private static final Logger logger = LoggerFactory.getLogger(ScannerImpl.class);
 	
 	@Value( "${dir.path}" )
 	private String dir_path;
@@ -27,6 +27,10 @@ public class ScannerImpl implements Scanner{
 	private String file_collectFolder;
 	@Value( "${file.collectPrefix:}" )
 	private String file_collectPrefix;
+	@Value( "${file.postPublishPolicy:delete}" )
+	private String file_postPublishPolicy;
+	@Value( "${file.archiveDirectory}" )
+	private String file_archiveDirectory;
 	@Value( "${db.collectTablePrefix:c_}" )
 	private String db_collectTablePrefix;
 	
@@ -63,11 +67,50 @@ public class ScannerImpl implements Scanner{
 	         filecontent.readFile(file);
 	         
 	         logger.debug(filecontent.print());
-	         dbPublisher.publish("c_meteo_pluiesquot", filecontent.getFieldNames(), filecontent.getData());
+	         int success=0;
+	         try {
+	        	 success = dbPublisher.publish("c_meteo_pluiesquot", filecontent.getFieldNames(), filecontent.getData());
+	        	 logger.debug("publish request returned value "+success);
+	        	 if (success>0) {
+	        		 this.removeFile(file);
+	        	 }
+	         } 
+	         catch (DataAccessException e)
+	         {
+	        	 logger.error(e.getLocalizedMessage());
+	        	 //throw new RuntimeException(e);
+	         }
 	      }
 		
 	}
 	
+	private void removeFile(File file) {
+		if(file_postPublishPolicy.equalsIgnoreCase("delete")) {
+			if (file.delete()) {
+				logger.info("Deleted file "+file.getName());
+			} else {
+				logger.error("Could not delete "+file.getName());
+			}
+		} else 
+		if(file_postPublishPolicy.equalsIgnoreCase("rename")) {
+			if (file.renameTo(new File(file.getParent(), file.getName()+".bak"))) {
+				logger.info("Renamed file "+file.getPath()+"(.bak)");
+			} else {
+				logger.error("Could not rename "+file.getPath()+" to "+file.getName()+".bak");
+			}
+		} else 
+		if(file_postPublishPolicy.equalsIgnoreCase("archive")) {
+			if (file.renameTo(new File(file_archiveDirectory, file.getName()))) {
+				logger.info("Archived file "+file.getPath()+" in "+file_archiveDirectory);
+			} else {
+				logger.error("Could not archive "+file.getPath()+" to "+file_archiveDirectory);
+			}
+		} else {
+			logger.warn("Unconventional value for file_postPublishPolicy property: "+file_postPublishPolicy+"\n \tDoing nothing !");
+		}
+			
+	}
+
 	private String buildTableName(File file) {
 		//check collectFolder matches (defined in properties file)
 		if (file_collectFolder.isEmpty() || !file_collectFolder.equalsIgnoreCase(file.getParentFile().getName())) {

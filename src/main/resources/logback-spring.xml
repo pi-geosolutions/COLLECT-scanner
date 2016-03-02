@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <logger name="org.springframework.web" level="INFO"/>
-    <logger name="scanner" level="DEBUG"/>
+	<property resource="config/logger.properties" />
+	<include resource="org/springframework/boot/logging/logback/base.xml" />
+	<logger name="org.springframework.web" level="INFO" />
+	<logger name="scanner" level="DEBUG" />
+	<appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<!-- deny all events with a level below ERROR -->
+			<level>ERROR</level>
+		</filter>
+
+		<smtpHost>smtp.gmail.com</smtpHost>
+		<localhost>pigeo.fr</localhost>
+		<smtpPort>465</smtpPort>
+		<username>ige31.jp@gmail.com</username>
+		<password>${logging.mail.password}</password>
+		<SSL>true</SSL> 
+		
+		<asynchronousSending>false</asynchronousSending>
+
+		<to>ige31.jp@gmail.com</to>
+		<!-- Multiple to elements are permitted -->
+
+		<from>logs@pi-geosolutions.fr</from>
+		<subject>Scanner Error: %logger{20} - %m</subject>
+		<cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTracker">
+			<bufferSize>1</bufferSize>
+		</cyclicBufferTracker>
+		<layout class="ch.qos.logback.classic.html.HTMLLayout"/>
+
+	</appender>
+ <!-- <logger name="scanner" level="DEBUG">
+		<appender-ref ref="EMAIL" />
+	</logger> -->
 </configuration>

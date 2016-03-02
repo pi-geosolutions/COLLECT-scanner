@@ -14,37 +14,39 @@ import scanner.db.DbPublisher;
 public class PostgresqlPublisher implements DbPublisher {
 
 	@Autowired
-    JdbcTemplate jdbcTemplate;
-	
-	@Value( "${db.fields.ignorecase:false}" )
+	JdbcTemplate jdbcTemplate;
+
+	@Value("${db.fields.ignorecase:false}")
 	private boolean ignorefieldscase;
-	
-	@Value( "${db.schema:public}" )
+
+	@Value("${db.schema:public}")
 	private String jdbc_schema;
 
-	public void publish(String tablename, List<String> headers, List<List<String>> data) {
-		//build complete tablename
-		tablename = jdbc_schema+"."+tablename;
-		Map<String,SQLColumn> fieldsMapper;
+	public int publish(String tablename, List<String> headers, List<List<String>> data) {
+		// build complete tablename
+		tablename = jdbc_schema + "." + tablename;
+		Map<String, SQLColumn> fieldsMapper;
 		fieldsMapper = this.loadTableMetadata(tablename);
-		if (fieldsMapper!=null) {
-			TypeMappingPreparedStatementCreator psc = new TypeMappingPreparedStatementCreator(tablename, headers, data, fieldsMapper);
+		if (fieldsMapper != null) {
+			TypeMappingPreparedStatementCreator psc = new TypeMappingPreparedStatementCreator(tablename, headers, data,
+					fieldsMapper);
 			psc.buildRequest();
-			jdbcTemplate.update(psc);
+			return jdbcTemplate.update(psc);
+		} else {
+			return 0;
 		}
-		this.clean();
+
 	}
-	
-	
-	private Map<String,SQLColumn> loadTableMetadata(String tablename) {
-		//we don't need to get real data, we just need a query, to get the metadata
-		String simplequery = "SELECT * FROM "+tablename+" LIMIT 1;";
-        return jdbcTemplate.query(simplequery,new ResultsetMetadataExtractor(ignorefieldscase));
+
+	private Map<String, SQLColumn> loadTableMetadata(String tablename) {
+		// we don't need to get real data, we just need a query, to get the
+		// metadata
+		String simplequery = "SELECT * FROM " + tablename + " LIMIT 1;";
+		return jdbcTemplate.query(simplequery, new ResultsetMetadataExtractor(ignorefieldscase));
 	}
 
 	private void clean() {
-		//TODO : clean the fieldsMapper HashMap, remove the file
+		// TODO : clean the fieldsMapper HashMap, remove the file
 	}
-
 
 }
