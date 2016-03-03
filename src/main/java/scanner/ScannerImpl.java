@@ -29,6 +29,8 @@ public class ScannerImpl implements Scanner {
 	private String file_postPublishPolicy;
 	@Value("${file.archiveDirectory}")
 	private String file_archiveDirectory;
+	@Value("${file.renameExtension}")
+	private String file_renameExtension;
 	@Value("${db.collectTablePrefix:c_}")
 	private String db_collectTablePrefix;
 
@@ -105,10 +107,10 @@ public class ScannerImpl implements Scanner {
 				logger.error("Could not delete " + file.getName());
 			}
 		} else if (file_postPublishPolicy.equalsIgnoreCase("rename")) {
-			if (file.renameTo(new File(file.getParent(), file.getName() + ".bak"))) {
-				logger.info("Renamed file " + file.getPath() + "(.bak)");
+			if (file.renameTo(new File(file.getParent(), file.getName() + file_renameExtension))) {
+				logger.info("Renamed file " + file.getPath() + "("+file_renameExtension+")");
 			} else {
-				logger.error("Could not rename " + file.getPath() + " to " + file.getName() + ".bak");
+				logger.error("Could not rename " + file.getPath() + " to " + file.getName() + file_renameExtension);
 			}
 		} else if (file_postPublishPolicy.equalsIgnoreCase("archive")) {
 			if (file.renameTo(new File(file_archiveDirectory, file.getName()))) {
