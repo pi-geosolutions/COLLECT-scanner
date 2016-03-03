@@ -121,6 +121,7 @@ Le chemin racine à scanner. A priori, le chemin "data" de l’instance owncloud
 **file.pattern**=`**/files/collect/*.csv`
 
 Le schema (pattern) de chemin d’accès. Définit à la fois le chemin d’accès et le schema du nom de fichier. Suit le modèle définit pour Maven [DirectoryScanner](https://maven.apache.org/shared/maven-shared-utils/apidocs/org/apache/maven/shared/utils/io/DirectoryScanner.html)
+
 **file.partsSeparator**=`--`
 
 Permet de découper le nom du fichier et extraire le nom de la table à cibler.
