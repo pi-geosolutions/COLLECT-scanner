@@ -30,7 +30,7 @@ En cas d’erreur lors du traitement d’un fichier, aucune donnée de ce fichie
 
 Si le traitement du fichier se passe bien, les données sont publiées dans la base et le fichier est archivé (supprimé, renommé ou archivé, selon la configuration. Voir Configuration).
 
-*Attention : COLLECT-scanner est conçu pour publier les données dans une table (de base de donnée) existante. Il ne créera pas la table en cas de besoin. *
+*Attention : COLLECT-scanner est conçu pour publier les données dans une table (de base de donnée) existante. Il ne créera pas la table en cas de besoin.*
 
 ## Conventions
 
@@ -56,7 +56,7 @@ Son nom doit commencer par le nom de la table de destination, suivi de "--". Le 
 
 Exemple de fichier valide : 
 
-meteo_pluiesquot--user2--160222_1228.csv
+`meteo_pluiesquot--user2--160222_1228.csv`
 
  (à publier dans la table c_meteo_pluiesquot. Voir Nom de la table, pour l’explication du préfixe c_).
 
@@ -66,7 +66,7 @@ Par défaut, le scan des fichiers est restreint par un pattern de chemin d’acc
 
 Ce pattern est défini dans le fichier de configuration et peut être modifié.
 
-Par défaut, il est défini à **/files/collect/*.csv c’est à dire qu’il cherchera les fichiers CSV (extension .csv) dans les dossiers collect, placés à la racine des dossiers utilisateurs d’owncloud. Où que soient ces dossiers files eux-même. Le reste des fichiers sera ignoré.
+Par défaut, il est défini à `**/files/collect/*.csv` c’est à dire qu’il cherchera les fichiers CSV (extension .csv) dans les dossiers collect, placés à la racine des dossiers utilisateurs d’owncloud. Où que soient ces dossiers files eux-même. Le reste des fichiers sera ignoré.
 
 **Nom de la table**
 
@@ -104,7 +104,7 @@ Ne pas oublier d’ajuster la config. Voir Configuration.
 
 Le fichier est un fichier jar (java, application spring-boot) et s’exécute de la façon standard. Ne pas oublier d’appeler le fichier de configuration personnalisé dans la commande : 
 
-java -jar COLLECT-scanner-0.0.1-SNAPSHOT.jar --spring.config.location=file:config/application.properties
+`java -jar COLLECT-scanner-0.0.1-SNAPSHOT.jar --spring.config.location=file:config/application.properties`
 
 ### Exécution automatique : tâche CRON
 
@@ -112,80 +112,86 @@ Le scan est supposé se faire à intervalles réguliers, Il est donc conseillé 
 
 ## Configuration
 
-Ci-dessous, le paramètre est en gras, une valeur exemple du paramètre suit. En-dessous de chaque paramètre de config, l’explication.
+Ci-dessous, le paramètre est en gras, une `valeur exemple` du paramètre suit. En-dessous de chaque paramètre de config, l’explication.
 
-#Input config
-**dir.path**=/home/pigeo/domains/sn-risk.pigeo.fr/data/oc/data
+**dir.path**=`/home/pigeo/domains/sn-risk.pigeo.fr/data/oc/data`
 
 Le chemin racine à scanner. A priori, le chemin "data" de l’instance owncloud à exploiter.
 
-**file.pattern**=**/files/collect/*.csv
+**file.pattern**=`**/files/collect/*.csv`
 
 Le schema (pattern) de chemin d’accès. Définit à la fois le chemin d’accès et le schema du nom de fichier. Suit le modèle définit pour Maven [DirectoryScanner](https://maven.apache.org/shared/maven-shared-utils/apidocs/org/apache/maven/shared/utils/io/DirectoryScanner.html)
-**file.partsSeparator**=--
+**file.partsSeparator**=`--`
 
 Permet de découper le nom du fichier et extraire le nom de la table à cibler.
 
-Ex. : meteo_pluiesquot--user1--160222_1228.csv -> meteo_pluiesquot
+*Ex. : meteo_pluiesquot--user1--160222_1228.csv -> meteo_pluiesquot*
 
 Ce qui suit la première occurrence de "--" n’est pas utilisé.
 
 Si on change ce paramètre, on peut changer de séparateur. 
-#Accepts 'delete', 'rename' or 'archive'
 
-**file.postPublishPolicy**=delete
+**file.postPublishPolicy**=`delete`
+
+Accepte 'delete', 'rename' or 'archive'.
 
 La démarche à suivre lorsqu’un fichier a été publié avec succès. Habituellement, on voudra le supprimer (‘delete’), le renommer (‘rename’) ou l’archiver dans un dossier (‘archive’). Toute autre valeur fera que rien ne se passera. Le fichier sera donc conservé au même endroit, au risque de générer des erreurs au prochain scan (l’update des données n’est pas implémenté)
 #used if postPublishPolicy is set to 'archive'
-**file.archiveDirectory**=/home/pigeo/domains/sn-risk.pigeo.fr/data/oc/oc_collect_archives
+
+**file.archiveDirectory**=`/home/pigeo/domains/sn-risk.pigeo.fr/data/oc/oc_collect_archives`
 
 Dossier utilisé pour l’archivage si on a choisi ‘archive’
-#used if postPublishPolicy is set to 'rename'
-**file.renameExtension**=.done
+
+**file.renameExtension**=`.done`
 
 Extension rajoutée au fichier si on a choisi ‘rename’
-**csv.separator**=;
+
+**csv.separator**=`;`
 
 Séparateur des champs, dans le fichier CSV. Habituellement, ‘,’ ou ‘;’ ou ‘\t’ (tabulation)
-**csv.quotechar**="
+
+**csv.quotechar**=`"`
 
 Guillemets utilisés pour encadre une chaine de caractères. Probablement pas besoin d’y toucher.
-**csv.skiplines**=0
+
+**csv.skiplines**=`0`
 
 Nombre de lignes en début de fichier à sauter. Par exemple s’il y avait des commentaires. A priori, laisser tel quel (on a besoin de lire les noms de champs)
-**csv.ignoreFields**=exported
+
+**csv.ignoreFields**=`exported`
 
 Ne pas publier certains champs (ici, la colonne exported)
 
-#Parsing
-**parsing.dateformat**=dd/MM/yyyy HH:mm:ss
+**parsing.dateformat**=`dd/MM/yyyy HH:mm:ss`
 
 Définit le format de date utilisé. Utiliser un format cohérent pour l’ensemble des données à collecter !
-**parsing.locale**=fr-FR
+
+**parsing.locale**=`fr-FR`
 
 La locale utilisée. Sert pour la lecture des données numérique notamment : dans la locale fr-FR, un réel s’écrira 17,53 alors que dans la locale en-US, par exemple, le même réel s’écrira 17.53.
 
-#Output config
-**jdbc.driver**=org.postgresql.Driver
-**jdbc.url**=jdbc:postgresql://localhost:5432/sn_risk_geodata
-**jdbc.user**=collect
-**jdbc.password**=collect
+**jdbc.driver**=`org.postgresql.Driver`
+
+**jdbc.url**=`jdbc:postgresql://localhost:5432/sn_risk_geodata
+
+**jdbc.user**=`collect`
+
+**jdbc.password**=`collect`
 
 Configuration JDBC (connexion à la base de données)
-**db.schema**=collect
+
+**db.schema**=`collect`
 
 Schema dans lequel on cherche les tables.
-**db.collectTablePrefix**=c_
+
+**db.collectTablePrefix**=`c_`
 
 Préfixe utilisé pour la correspondance noms de fichier->table
 
 Ex. : fichier meteo_pluiesquot--user1--160222_1228.csv -> table **c_**meteo_pluiesquot
 
 
-
-#Logging
-
-**logging.file**=/home/jean//logs/collect/scanner/scanner.log
+**logging.file**=`/home/jean//logs/collect/scanner/scanner.log`
 
 Emplacement du fichier de log. S’assurer que l’emplacement est accessible en écriture par l’utilisateur exécutant le code (a priori, www-data, propriétaire du dossier de données owncloud)
 
@@ -196,7 +202,7 @@ A faire...
 ## Exemples
 
 ### Correspondance tables/fichiers
-
+```
 CREATE TABLE collect.c_meteo_stations
 
 (
@@ -228,14 +234,17 @@ COMMENT ON TABLE collect.c_meteo_stations
   IS 'Stations météo (collecte pluies quotidiennes)';
 
 COMMENT ON COLUMN collect.c_meteo_stations."IdStation" IS 'ID (not serial since the values will be set from an Access Database, ie external checks on the sequence.)';
-
+```
 définit la table qui pourra recevoir les données de fichiers tels que celui-ci : 
 
-meteo/user1/files/collect/meteo_stations--user1--160222_1228.csv : 
-
+`meteo/user1/files/collect/meteo_stations--user1--160222_1228.csv` : 
+```
 "IdStation";"NomStation";"LonStation";"LatStation"
 3;"dakar gare";-17,58;57,25
+```
+De même,
 
+```
 CREATE TABLE collect.c_meteo_pluiesquot
 
 (
@@ -271,24 +280,26 @@ ALTER TABLE collect.c_meteo_pluiesquot
 COMMENT ON TABLE collect.c_meteo_pluiesquot
 
   IS 'Collected data about rainfalls (links with meteo_stations)';
-
+```
 définit la table qui pourra recevoir les données de fichiers tels que celui-ci : 
 
-meteo/user1/files/collect/meteo_pluiesquot--user1--160222_1228.csv 
+`meteo/user1/files/collect/meteo_pluiesquot--user1--160222_1228.csv` 
 
+```
 "IdMesure";"CodeStation";"DateMesure";"Pluiemm";"exported"
 1;2;3/2/2016 00:00:00;10;0
 2;2;4/2/2016 00:00:00;25;0
 3;2;5/2/2016 00:00:00;5;0
 4;2;15/2/2016 00:00:00;5;0
 5;2;1/2/2016 00:00:00;85;0
+```
 
 *Remarque : dans sa définition, cette table définit une clef étrangère sur la table c_meteo_stations définie ci-dessus).*
 
 *Chaque ligne du fichier CSV devra fournir un code CodeStation valide (i.e. déjà présent dans la table c_meteo_stations au moment de sa publication).*
 
 ### Fichier de configuration pour le sénégal
-
+```
 #Spring boot base config
 spring.main.web_environment=false
 spring.main.banner_mode=log
@@ -324,3 +335,4 @@ db.collectTablePrefix=c_
 #Logging
 
 logging.file=/home/jean//logs/collect/scanner/scanner.log
+```
