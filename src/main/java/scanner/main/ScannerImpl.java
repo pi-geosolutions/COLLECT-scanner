@@ -1,6 +1,9 @@
-package scanner;
+package scanner.main;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.maven.shared.utils.io.DirectoryScanner;
 import org.slf4j.Logger;
@@ -10,8 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
-import scanner.db.DbPublisher;
-import scanner.model.impl.CsvContent;
+import scanner.model.CsvContent;
+import scanner.service.CsvContentManager;
 
 @Component
 public class ScannerImpl implements Scanner {
@@ -44,7 +47,7 @@ public class ScannerImpl implements Scanner {
 	private String csv_ignoreFields;
 
 	@Autowired
-	DbPublisher dbPublisher;
+	CsvContentManager csvManager;
 
 	public void scan() {
 		if (dir_path == null || file_pattern == null) {
@@ -68,6 +71,8 @@ public class ScannerImpl implements Scanner {
 			boolean successfulRead = this.readFile(file);
 			if (successfulRead) {
 				this.removeFile(file);
+			} else {
+				logger.error("Error publishing file "+file.getPath());
 			}
 		}
 	}
@@ -76,27 +81,27 @@ public class ScannerImpl implements Scanner {
 	 * Returns true if file successfully read.
 	 */
 	private boolean readFile(File file) {
-		String tablename = this.buildTableName(file);
-		if (tablename == null) {
+		List<String> names = this.buildTableName(file);
+		if (names == null || names.isEmpty()) {
 			return false;
 		}
-		CsvContent filecontent = new CsvContent(csv_separator, csv_quotechar, csv_skiplines);
-		filecontent.setIgnoreValues(csv_ignoreFields);
-		filecontent.readFile(file);
+		CsvContent csv = new CsvContent(csv_separator, csv_quotechar, csv_skiplines);
+		csv.setIgnoreValues(csv_ignoreFields);
+		csv.readFile(file);
 
-		logger.debug(filecontent.print());
-		int success = 0;
+		logger.debug(csv.print());
+		boolean success = false;
 		try {
-			success = dbPublisher.publish(tablename, filecontent.getFieldNames(), filecontent.getData());
-			logger.debug("publish request returned value " + success);
-			if (success > 0) {
-				return true;
-			}
+			//success = csvManager.publish(csv, names.get(0));
+			String tablename = names.get(0);
+			names.remove(0);
+			logger.debug(names.toString());
+			success = csvManager.publish(csv, tablename, names);
 		} catch (DataAccessException e) {
 			logger.error(e.getLocalizedMessage());
 			// throw new RuntimeException(e);
 		}
-		return false;
+		return success;
 	}
 
 	private void removeFile(File file) {
@@ -125,10 +130,23 @@ public class ScannerImpl implements Scanner {
 
 	}
 
-	private String buildTableName(File file) {
-		String name = db_collectTablePrefix + file.getName().split(file_partsSeparator)[0];
-		logger.info("File '" + file.getName() + "' -> table name '" + name + "'");
-		return name;
+	private List<String> buildTableName(File file) {
+		//cuts the filename into parts (using the '--' separator by default)
+		List<String> names = new ArrayList(Arrays.asList(file.getName().split(file_partsSeparator)));
+		//drops the last part, insignificant, unless it was tablename only  (size=1)!
+		logger.debug(names.toString());
+		if (names.size() > 1) {
+			names.remove(names.size()-1);
+		}
+		//Of the remaining entries first entry is tablename, 
+		//next ones are components of the primary key, used for UPDATEs
+		
+		//we add the table_prefix to the tablename (first entry
+		names.set(0, db_collectTablePrefix + names.get(0)) ;
+		logger.debug(names.toString());
+		
+		logger.info("File '" + file.getName() + "' -> table name '" + names.get(0) + "'");
+		return names;
 	}
 
 }

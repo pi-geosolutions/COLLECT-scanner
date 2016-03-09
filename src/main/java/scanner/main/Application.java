@@ -1,11 +1,11 @@
-package scanner;
+package scanner.main;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import scanner.model.impl.CsvContent;
+import scanner.model.CsvContent;
 
 public class Application {
 

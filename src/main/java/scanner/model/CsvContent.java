@@ -1,4 +1,4 @@
-package scanner.model.impl;
+package scanner.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,6 +26,7 @@ public class CsvContent {
 	private int csv_skiplines;
 	private List<String> ignoreValues;
 	private File file;
+	
 
 	public CsvContent(char csv_separator, char csv_quotechar, int csv_skiplines) {
 		this.csv_separator = csv_separator;
@@ -125,11 +126,11 @@ public class CsvContent {
 
 	}
 
-	/*
-	 * Must be set AFTER executing readFile to be efficient
-	 */
 	public void setIgnoreValues(String csv_ignoreValues) {
 		this.ignoreValues = Arrays.asList(csv_ignoreValues.split(","));
+		if ((this.headers!=null) && (!this.headers.isEmpty())) {
+			this.doIgnoreValues();
+		}
 	}
 
 	private void doIgnoreValues() {

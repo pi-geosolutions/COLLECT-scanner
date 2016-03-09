@@ -1,4 +1,4 @@
-package scanner.db.impl;
+package scanner.dao.utils;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -137,7 +137,6 @@ public class TypeMappingPreparedStatementCreator implements PreparedStatementCre
 	}
 
 	private Date parseDate(String value) throws ParseException {
-		logger.info("TODO: parametrize dateformat (date parsing): "+dateParsingFormat);
 		DateFormat formatter = new SimpleDateFormat(dateParsingFormat);
 		Date date = new java.sql.Date(formatter.parse(value).getTime());
 		//System.out.println(date);

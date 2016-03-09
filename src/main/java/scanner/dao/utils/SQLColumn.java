@@ -1,4 +1,4 @@
-package scanner.db.impl;
+package scanner.dao.utils;
 
 public class SQLColumn {
 	private String name;

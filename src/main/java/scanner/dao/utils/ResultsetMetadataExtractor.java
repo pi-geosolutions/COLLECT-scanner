@@ -1,4 +1,4 @@
-package scanner.db.impl;
+package scanner.dao.utils;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
