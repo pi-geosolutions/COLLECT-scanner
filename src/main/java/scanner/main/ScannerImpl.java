@@ -99,10 +99,10 @@ public class ScannerImpl implements Scanner {
 			names.remove(0);
 			logger.debug(names.toString());
 			if (this.db_updatable && (!names.isEmpty())) {
-				logger.debug("Performing an UPSERT in "+tablename +" from file "+file.getPath());
+				logger.info("Performing an UPSERT in "+tablename +" from file "+file.getPath());
 				success = csvManager.publish(csv, tablename, names);
 			} else {
-				logger.debug("Performing a simple INSERT (no update) in "+tablename +" from file "+file.getPath());
+				logger.info("Performing a simple INSERT (no update) in "+tablename +" from file "+file.getPath());
 				success = csvManager.publish(csv, tablename);
 			}
 		} catch (DataAccessException e) {

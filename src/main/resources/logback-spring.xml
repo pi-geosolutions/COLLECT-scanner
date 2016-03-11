@@ -3,7 +3,7 @@
 	<property resource="config/logger.properties" />
 	<include resource="org/springframework/boot/logging/logback/base.xml" />
 	<logger name="org.springframework.web" level="INFO" />
-	<logger name="scanner" level="${logging.scanner.loglevel}" />
+	<logger name="scanner" level="INFO" />
 	<appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<!-- deny all events with a level below ERROR -->
