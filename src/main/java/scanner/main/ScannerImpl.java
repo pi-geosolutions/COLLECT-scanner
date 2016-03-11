@@ -36,6 +36,8 @@ public class ScannerImpl implements Scanner {
 	private String file_renameExtension;
 	@Value("${db.collectTablePrefix:c_}")
 	private String db_collectTablePrefix;
+	@Value("${db.updatable:true}")
+	private boolean db_updatable;
 
 	@Value("${csv.separator:';'}")
 	private char csv_separator;
@@ -96,7 +98,13 @@ public class ScannerImpl implements Scanner {
 			String tablename = names.get(0);
 			names.remove(0);
 			logger.debug(names.toString());
-			success = csvManager.publish(csv, tablename, names);
+			if (this.db_updatable && (!names.isEmpty())) {
+				logger.debug("Performing an UPSERT in "+tablename +" from file "+file.getPath());
+				success = csvManager.publish(csv, tablename, names);
+			} else {
+				logger.debug("Performing a simple INSERT (no update) in "+tablename +" from file "+file.getPath());
+				success = csvManager.publish(csv, tablename);
+			}
 		} catch (DataAccessException e) {
 			logger.error(e.getLocalizedMessage());
 			// throw new RuntimeException(e);

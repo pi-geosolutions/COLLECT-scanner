@@ -40,9 +40,9 @@ public class PostgresqlPublisher implements DbPublisher {
 	private List<String> headers;
 
 	@Override
-	public int publish(String tablename, List<String> headers, List<List<String>> data) {
+	public int publish(String tablename, List<String> headers, List<List<String>> data) throws ParseException {
 		// build complete tablename
-		tablename = db_schema + "." + tablename;
+		/*tablename = db_schema + "." + tablename;
 		fieldsMapper = this.loadTableMetadata(tablename);
 		if (fieldsMapper != null) {
 			TypeMappingPreparedStatementCreator psc = new TypeMappingPreparedStatementCreator(tablename, headers, data,
@@ -57,7 +57,36 @@ public class PostgresqlPublisher implements DbPublisher {
 			return jdbcTemplate.update(psc);
 		} else {
 			return 0;
+		}*/
+		int results=0;
+
+		// Load table metadata (for proper field parsing)
+		this.fieldsMapper = this.loadTableMetadata(tablename);
+		this.headers = headers;
+
+		// build complete tablename
+		tablename = "\"" + db_schema + "\".\"" + tablename + "\"";
+		for (List<String> row : data) {
+			String req = " INSERT INTO " + tablename + "(";
+			for (String header : headers) {
+				req += "\"" + header + "\", ";
+			}
+			req = req.substring(0, req.length() - 2); // drop the last ,
+			req += ")" + " VALUES ( ";
+			for (int idx = 0 ; idx < row.size() ; idx++)  {
+				req += this.getValue(row.get(idx), idx) + ", ";
+			}
+			req = req.substring(0, req.length() - 2); // drop the last ,
+			req +=");";
+			
+			logger.debug(req);
+			int result = jdbcTemplate.update(req);
+			results+=result;
+			
 		}
+		logger.debug("Inserted "+results+" new row(s)");
+		
+		return results;
 
 	}
 

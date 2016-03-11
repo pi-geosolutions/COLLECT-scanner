@@ -25,8 +25,16 @@ public class CsvContentManagerImpl implements CsvContentManager {
 
 	@Override
 	public boolean publish(CsvContent csv, String tablename) {
-		int result = publisher.publish(tablename, csv.getFieldNames(), csv.getData());
-		return (result > 0);
+		int res;
+		try {
+			res = publisher.publish(tablename, csv.getFieldNames(), csv.getData());
+			logger.info("Inserted "+res+" new rows");
+			return true;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();logger.error(e.getLocalizedMessage());
+			return false;
+		}
 	}
 
 	@Override
