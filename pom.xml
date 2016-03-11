@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.pigeo.rimap</groupId>
 	<artifactId>COLLECT-scanner</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -79,4 +79,17 @@
 		</pluginRepository>
 	</pluginRepositories>
 
+	<name>COLLECT-scanner</name>
+	<url>https://github.com/pi-geosolutions/COLLECT-scanner</url>
+	<description>COLLECT-scanner est une application développée dans le cadre de la fonctionnalité de collecte de données via owncloud, du projet PADRE.
+
+Dans le contexte du projet PADRE (pays à faible connectivité internet), les agents chargés de la collecte et de la saisie de données régulières (données météo, prix des marchés, etc) ne disposent que rarement d’une bonne connexion internet. Un outil de saisie en ligne est donc à proscrire, dans la mesure du possible, et du moins en ce qui concerne les actions quotidiennes.
+
+Une solution s’appuyant sur l’application open-source Owncloud, permettant de synchroniser en tâche de fond des dossier avec un serveur, est en cours de développement.
+
+COLLECT-scanner est un des composants de cette solution. </description>
+	<organization>
+		<name>pi-Geosolutions</name>
+		<url>http://www.pi-geosolutions.fr</url>
+	</organization>
 </project>
