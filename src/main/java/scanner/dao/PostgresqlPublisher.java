@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import scanner.dao.utils.ResultsetMetadataExtractor;
 import scanner.dao.utils.SQLColumn;
-import scanner.dao.utils.TypeMappingPreparedStatementCreator;
 import scanner.dao.utils.UpsertResult;
 
 @Component
@@ -28,8 +27,6 @@ public class PostgresqlPublisher implements DbPublisher {
 
 	@Value("${parsing.locale}")
 	private String parsing_locale;
-	@Value("${parsing.dateformat}")
-	private String parsing_dateformat;
 
 	@Value("${db.fields.ignorecase:false}")
 	private boolean ignorefieldscase;
@@ -41,23 +38,6 @@ public class PostgresqlPublisher implements DbPublisher {
 
 	@Override
 	public int publish(String tablename, List<String> headers, List<List<String>> data) throws ParseException {
-		// build complete tablename
-		/*tablename = db_schema + "." + tablename;
-		fieldsMapper = this.loadTableMetadata(tablename);
-		if (fieldsMapper != null) {
-			TypeMappingPreparedStatementCreator psc = new TypeMappingPreparedStatementCreator(tablename, headers, data,
-					fieldsMapper);
-			if (!this.parsing_locale.isEmpty()) {
-				psc.setLocale(Locale.forLanguageTag(parsing_locale));
-			}
-			if (!this.parsing_dateformat.isEmpty()) {
-				psc.setDateParsingFormat(parsing_dateformat);
-			}
-			psc.buildRequest();
-			return jdbcTemplate.update(psc);
-		} else {
-			return 0;
-		}*/
 		int results=0;
 
 		// Load table metadata (for proper field parsing)
@@ -118,9 +98,6 @@ public class PostgresqlPublisher implements DbPublisher {
 			String req = "WITH update_items AS (UPDATE " + tablename + " SET ";
 			for (String header : headers) {
 				if (!primarykeys.contains(header)) {
-					// logger.debug("field " + header +", index
-					// "+headers.indexOf(header)+", value
-					// "+row.get(headers.indexOf(header)));
 					i = headers.indexOf(header);
 					req += "\"" + header + "\" = " + this.getValue(row.get(i), i) + ", ";
 				}
@@ -128,9 +105,6 @@ public class PostgresqlPublisher implements DbPublisher {
 			req = req.substring(0, req.length() - 2); // drop the last ,
 			req += " WHERE ";
 			for (String pkey : primarykeys) {
-				// logger.debug("pkey " + pkey +", index
-				// "+headers.indexOf(pkey)+", value
-				// "+row.get(headers.indexOf(pkey)));
 				i = headers.indexOf(pkey);
 				req += "\"" + pkey + "\" = " + this.getValue(row.get(i), i) + ", ";
 			}
@@ -139,17 +113,11 @@ public class PostgresqlPublisher implements DbPublisher {
 
 			req += "INSERT INTO " + tablename + "(";
 			for (String header : headers) {
-				// logger.debug("field " + header +", index
-				// "+headers.indexOf(header)+", value
-				// "+row.get(headers.indexOf(header)));
 				req += "\"" + header + "\", ";
 			}
 			req = req.substring(0, req.length() - 2); // drop the last ,
 			req += ")" + " SELECT ";
 			for (int idx = 0 ; idx < row.size() ; idx++)  {
-				// logger.debug("field " + header +", index
-				// "+headers.indexOf(header)+", value
-				// "+row.get(headers.indexOf(header)));
 				req += this.getValue(row.get(idx), idx) + ", ";
 			}
 			req = req.substring(0, req.length() - 2); // drop the last ,
