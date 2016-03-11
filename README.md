@@ -60,13 +60,30 @@ Le choix de la base de données destination est, en théorie, ouvert. Cependant,
 
 Le fichier doit avoir l’extension .csv
 
-Son nom doit commencer par le nom de la table de destination, suivi de "--". Le reste n’a pas d’importance.
+Son nom doit commencer par le nom de la table de destination, suivi de `--`. 
+Dans le cas d'une insertion simple (une donnée avec même identifiant n'est pas présente dans la table de la base de données), le reste n’a pas d’importance, *tant qu'il ne contient pas d'autre occurrence de* `--`. 
+
+***Si l'on veut autoriser la mise à jour des données*** alors le nom commence par le nom de la table de destination, suivi de `--`, suivi de la ou les clefs primaires, séparées par des `--`, suivi enfin d'un dernier `--` et d'une suite dont le contenu importe peu (tant qu'il ne contient pas de nouvelle occurrence de `--`).
+
 
 Exemple de fichier valide : 
 
-`meteo_pluiesquot--user2--160222_1228.csv`
+`meteo_pluiesquot--user2-160222_1228.csv` (insertion seulement)
+
+`meteo_pluiesquot--IdMesure--user2-160222_1228.csv` (mise à jour & insertion. Clef primaire simple, `IdMesure`)
+
+`meteo_pluiesquot--IdMesure--IdUser--160222_1228.csv` (mise à jour & insertion. Clef primaire composite, `IdMesure` & `IdUser`)
+
 
  (à publier dans la table c_meteo_pluiesquot. Voir Nom de la table, pour l’explication du préfixe c_).
+ 
+ 
+*Notes* : 
+
++ *ce système permet de n'activer que certains fichiers, ou ponctuellement, pour une mise à jour, en conservant une politique plus stricte pour l'ensemble des fichiers, en les nommant de sorte à ne pas activer le support de l'update.*
+
++ *le support de la mise à jour peut être désactivé au niveau global, dans le fichier de config.*
+
 
 **Chemin du fichier**
 
@@ -92,7 +109,7 @@ Par défaut, un schema spécial est utilisé, appelé collect. Si vous voulez ut
 
 La table doit être créée dans la base de donnée, à la main (en utilisant un outil comme phppgadmin, par exemple, ou en ligne de commande).
 
-*Attention : le format de fichiers CSV ne permet pas de typer les données. L’outil n’a donc aucun moyen de savoir de quel type (chaîne de caractères, entier, réel, date) est chaque donnée, si ce n’est via la définition de la table. ***_C’est donc la table qui définit le modèle de données. Et les fichiers qui doivent suivre ce modèle._**
+*Attention : le format de fichiers CSV ne permet pas de typer les données. L’outil n’a donc aucun moyen de savoir de quel type (chaîne de caractères, entier, réel, date) est chaque donnée, si ce n’est via la définition de la table.* *** C’est donc la table qui définit le modèle de données. Et les fichiers qui doivent suivre ce modèle.***
 
 Il est également possible de définir des clefs primaires et étrangères sur la table. Les données à publier (dans les fichiers CSV) devront respecter ces contraintes, sous peine d’échec de la publication.
 
@@ -102,7 +119,7 @@ N’entre pas dans le cadre de cette doc.
 
 Cependant, afin de respecter la convention de base de la collecte, il conviendra de créer un dossier "collect" dans le compte des utilisateurs voulant publier leurs fichiers CSV.
 
-Les fichiers CSV devront être déposés dans ce fichier.
+Les fichiers CSV devront être déposés dans ce dossier.
 
 ### Personnalisation de la configuration
 
@@ -110,9 +127,13 @@ Ne pas oublier d’ajuster la config. Voir Configuration.
 
 ### Exécution
 
-Le fichier est un fichier jar (java, application spring-boot) et s’exécute de la façon standard. Ne pas oublier d’appeler le fichier de configuration personnalisé dans la commande : 
+Le fichier est un fichier jar (java, application spring-boot) et s’exécute de la façon standard. Pour appeler le fichier de configuration personnalisé dans la commande, la syntaxe à suivre est : 
 
 `java -jar COLLECT-scanner-0.0.1-SNAPSHOT.jar --spring.config.location=file:config/application.properties`
+
+*Note : si le fichier de config adapté est nommé application.properties est logé dans le même répertoire que le fichier jar, ou dans un sous-répertoire nommé config, il n'est pas nécessaire de le déclarer : l'application vérifie automatiquement si un tel fichier est accessible. Ainsi, dans le cas de notre commande ci-dessus, on pourrait aussi se contenter de :*
+
+`java -jar COLLECT-scanner-0.0.1-SNAPSHOT.jar`
 
 ### Exécution automatique : tâche CRON
 
@@ -132,11 +153,15 @@ Le schema (pattern) de chemin d’accès. Définit à la fois le chemin d’acc�
 
 **file.partsSeparator**=`--`
 
-Permet de découper le nom du fichier et extraire le nom de la table à cibler.
+Permet de découper le nom du fichier et extraire le nom de la table à cibler. Voir les [conventions de nommage](#conventions-de-nommage)
 
-*Ex. : meteo_pluiesquot--user1--160222_1228.csv -> meteo_pluiesquot*
+*Ex. : *
 
-Ce qui suit la première occurrence de "--" n’est pas utilisé.
++ *meteo_pluiesquot--user1-160222_1228.csv -> meteo_pluiesquot*
+
++ *meteo_pluiesquot--IdMesure--user2-160222_1228.csv -> meteo_pluiesquot avec clef primaire IdMesure utilisée pour les updates*
+
+Ce qui suit la dernière occurrence de "--" n’est pas utilisé.
 
 Si on change ce paramètre, on peut changer de séparateur. 
 
@@ -145,7 +170,6 @@ Si on change ce paramètre, on peut changer de séparateur.
 Accepte 'delete', 'rename' or 'archive'.
 
 La démarche à suivre lorsqu’un fichier a été publié avec succès. Habituellement, on voudra le supprimer (‘delete’), le renommer (‘rename’) ou l’archiver dans un dossier (‘archive’). Toute autre valeur fera que rien ne se passera. Le fichier sera donc conservé au même endroit, au risque de générer des erreurs au prochain scan (l’update des données n’est pas implémenté)
-#used if postPublishPolicy is set to 'archive'
 
 **file.archiveDirectory**=`/home/pigeo/domains/sn-risk.pigeo.fr/data/oc/oc_collect_archives`
 
@@ -157,7 +181,7 @@ Extension rajoutée au fichier si on a choisi ‘rename’
 
 **csv.separator**=`;`
 
-Séparateur des champs, dans le fichier CSV. Habituellement, ‘,’ ou ‘;’ ou ‘\t’ (tabulation)
+Séparateur des champs, dans le fichier CSV. Habituellement, `,` ou `;` ou `\t` (tabulation)
 
 **csv.quotechar**=`"`
 
@@ -170,10 +194,6 @@ Nombre de lignes en début de fichier à sauter. Par exemple s’il y avait des 
 **csv.ignoreFields**=`exported`
 
 Ne pas publier certains champs (ici, la colonne exported)
-
-**parsing.dateformat**=`dd/MM/yyyy HH:mm:ss`
-
-Définit le format de date utilisé. Utiliser un format cohérent pour l’ensemble des données à collecter !
 
 **parsing.locale**=`fr-FR`
 
@@ -199,14 +219,16 @@ Préfixe utilisé pour la correspondance noms de fichier->table
 
 Ex. : fichier meteo_pluiesquot--user1--160222_1228.csv -> table **c_**meteo_pluiesquot
 
+**db.updatable**=`true`
 
-**logging.file**=`/home/jean//logs/collect/scanner/scanner.log`
+Autorise (`true`) ou non (`false`) la fcontion d'update sur les données. S'il est à true et que les fichiers CSV contiennent des données dont les identifiants sont déjà dans la table de la base de données, ceux-ci seront mis à jour (les anciens enregistrements seront remplacés par les nouvelles valeurs du fichier).
+S'il est à false, seules des données nouvelles seront acceptées, i.e. avec un identifiant ne figurant pas déjà dans la base de données : dans le cas contraire, une erreur sera retournée et le fichier ne sera pas traité.
+Si ce paramètre est à false, alors même des fichiers dont le schema de nommage précise des clefs primaires (voir [conventions de nommage](#conventions-de-nommage)) ne seront pas éligible pour l'update. 
+
+**logging.file**=`/home/jean/logs/collect/scanner/scanner.log`
 
 Emplacement du fichier de log. S’assurer que l’emplacement est accessible en écriture par l’utilisateur exécutant le code (a priori, www-data, propriétaire du dossier de données owncloud)
 
-## Logs
-
-A faire...
 
 ## Exemples
 
@@ -244,13 +266,16 @@ COMMENT ON TABLE collect.c_meteo_stations
 
 COMMENT ON COLUMN collect.c_meteo_stations."IdStation" IS 'ID (not serial since the values will be set from an Access Database, ie external checks on the sequence.)';
 ```
+
 définit la table qui pourra recevoir les données de fichiers tels que celui-ci : 
 
 `meteo/user1/files/collect/meteo_stations--user1--160222_1228.csv` : 
+
 ```
 "IdStation";"NomStation";"LonStation";"LatStation"
 3;"dakar gare";-17,58;57,25
 ```
+
 De même,
 
 ```
@@ -262,7 +287,7 @@ CREATE TABLE collect.c_meteo_pluiesquot
 
   "CodeStation" integer NOT NULL,
 
-  "DateMesure" date NOT NULL,
+  "DateMesure" timestamp without time zone NOT NULL,
 
   "Pluiemm" integer NOT NULL,
 
@@ -290,9 +315,10 @@ COMMENT ON TABLE collect.c_meteo_pluiesquot
 
   IS 'Collected data about rainfalls (links with meteo_stations)';
 ```
-définit la table qui pourra recevoir les données de fichiers tels que celui-ci : 
 
-`meteo/user1/files/collect/meteo_pluiesquot--user1--160222_1228.csv` 
+définit la table qui pourra recevoir les données de fichiers tels que celui-ci (en mode insertion seule): 
+
+`meteo/user1/files/collect/meteo_pluiesquot--user1-160222_1228.csv` 
 
 ```
 "IdMesure";"CodeStation";"DateMesure";"Pluiemm";"exported"
@@ -303,11 +329,19 @@ définit la table qui pourra recevoir les données de fichiers tels que celui-ci
 5;2;1/2/2016 00:00:00;85;0
 ```
 
-*Remarque : dans sa définition, cette table définit une clef étrangère sur la table c_meteo_stations définie ci-dessus).*
+*Remarques : *
 
-*Chaque ligne du fichier CSV devra fournir un code CodeStation valide (i.e. déjà présent dans la table c_meteo_stations au moment de sa publication).*
++ *dans sa définition (SQL), cette table définit une clef étrangère sur la table c_meteo_stations définie ci-dessus).*
+
++ *Chaque ligne du fichier CSV devra fournir un code CodeStation valide (i.e. déjà présent dans la table c_meteo_stations au moment de sa publication).*
+
++ *Si on veut faire un update des données, le nom du fichier devra spécifier la clef primaire (simple) de la table : 
+
+`meteo/user1/files/collect/meteo_pluiesquot--IdMesure--user1-160222_1228.csv` 
+
 
 ### Fichier de configuration pour le sénégal
+
 ```
 #Spring boot base config
 spring.main.web_environment=false
@@ -330,7 +364,6 @@ csv.skiplines=0
 csv.ignoreFields=exported
 
 #Parsing
-parsing.dateformat=dd/MM/yyyy HH:mm:ss
 parsing.locale=fr-FR
 
 #Output config
@@ -344,4 +377,8 @@ db.collectTablePrefix=c_
 #Logging
 
 logging.file=/home/jean//logs/collect/scanner/scanner.log
+#Specify logging levels for specific packages (see https://docs.spring.io/spring-boot/docs/current/reference/html/howto-logging.html)
+logging.level.org.springframework.boot=INFO
+logging.level.org.springframework=WARN
+logging.level.scanner=DEBUG
 ```
