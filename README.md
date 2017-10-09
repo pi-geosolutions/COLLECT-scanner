@@ -208,7 +208,7 @@ La locale utilisée. Sert pour la lecture des données numérique notamment : da
 
 **jdbc.driver**=`org.postgresql.Driver`
 
-**jdbc.url**=`jdbc:postgresql://localhost:5432/sn_risk_geodata
+**jdbc.url**=`jdbc:postgresql://localhost:5432/sn_risk_geodata`
 
 **jdbc.user**=`collect`
 
@@ -224,7 +224,7 @@ Schema dans lequel on cherche les tables.
 
 Préfixe utilisé pour la correspondance noms de fichier->table
 
-Ex. : fichier meteo_pluiesquot--user1--160222_1228.csv -> table **c_**meteo_pluiesquot
+Ex. : fichier meteo_pluiesquot--user1--160222_1228.csv -> table c_meteo_pluiesquot
 
 **db.updatable**=`true`
 
