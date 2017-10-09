@@ -20,6 +20,13 @@ COLLECT-scanner est un des composants de cette solution.
 
 **Prérequis :** Cet outil nécessite Java 7 ou ultérieur.
 
+## Compiler
+
+Compiler avec maven : 
+ `mvn package`
+ 
+ Vous pouvez aussi télécharger le binaire (jar) : [COLLECT-scanner-1.0.0-SNAPSHOT.jar](http://depots.pigeo.fr/jean/COLLECT-scanner-1.0.0-SNAPSHOT.jar)
+
 ## Fonctionnalités
 
 ### Scan
@@ -109,7 +116,7 @@ Par défaut, un schema spécial est utilisé, appelé collect. Si vous voulez ut
 
 La table doit être créée dans la base de donnée, à la main (en utilisant un outil comme phppgadmin, par exemple, ou en ligne de commande).
 
-*Attention : le format de fichiers CSV ne permet pas de typer les données. L’outil n’a donc aucun moyen de savoir de quel type (chaîne de caractères, entier, réel, date) est chaque donnée, si ce n’est via la définition de la table.* *** C’est donc la table qui définit le modèle de données. Et les fichiers qui doivent suivre ce modèle.***
+*Attention : le format de fichiers CSV ne permet pas de typer les données. L’outil n’a donc aucun moyen de savoir de quel type (chaîne de caractères, entier, réel, date) est chaque donnée, si ce n’est via la définition de la table.* ***C’est donc la table qui définit le modèle de données. Et les fichiers qui doivent suivre ce modèle.***
 
 Il est également possible de définir des clefs primaires et étrangères sur la table. Les données à publier (dans les fichiers CSV) devront respecter ces contraintes, sous peine d’échec de la publication.
 
@@ -201,7 +208,7 @@ La locale utilisée. Sert pour la lecture des données numérique notamment : da
 
 **jdbc.driver**=`org.postgresql.Driver`
 
-**jdbc.url**=`jdbc:postgresql://localhost:5432/sn_risk_geodata
+**jdbc.url**=`jdbc:postgresql://localhost:5432/sn_risk_geodata`
 
 **jdbc.user**=`collect`
 
@@ -217,7 +224,7 @@ Schema dans lequel on cherche les tables.
 
 Préfixe utilisé pour la correspondance noms de fichier->table
 
-Ex. : fichier meteo_pluiesquot--user1--160222_1228.csv -> table **c_**meteo_pluiesquot
+Ex. : fichier meteo_pluiesquot--user1--160222_1228.csv -> table c_meteo_pluiesquot
 
 **db.updatable**=`true`
 
