@@ -116,7 +116,7 @@ Par défaut, un schema spécial est utilisé, appelé collect. Si vous voulez ut
 
 La table doit être créée dans la base de donnée, à la main (en utilisant un outil comme phppgadmin, par exemple, ou en ligne de commande).
 
-*Attention : le format de fichiers CSV ne permet pas de typer les données. L’outil n’a donc aucun moyen de savoir de quel type (chaîne de caractères, entier, réel, date) est chaque donnée, si ce n’est via la définition de la table.* *** C’est donc la table qui définit le modèle de données. Et les fichiers qui doivent suivre ce modèle.***
+*Attention : le format de fichiers CSV ne permet pas de typer les données. L’outil n’a donc aucun moyen de savoir de quel type (chaîne de caractères, entier, réel, date) est chaque donnée, si ce n’est via la définition de la table.* ***C’est donc la table qui définit le modèle de données. Et les fichiers qui doivent suivre ce modèle.***
 
 Il est également possible de définir des clefs primaires et étrangères sur la table. Les données à publier (dans les fichiers CSV) devront respecter ces contraintes, sous peine d’échec de la publication.
 
@@ -162,7 +162,7 @@ Le schema (pattern) de chemin d’accès. Définit à la fois le chemin d’acc�
 
 Permet de découper le nom du fichier et extraire le nom de la table à cibler. Voir les [conventions de nommage](#conventions-de-nommage)
 
-*Ex. : *
+*Ex. :*
 
 + *meteo_pluiesquot--user1-160222_1228.csv -> meteo_pluiesquot*
 
