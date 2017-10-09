@@ -48,7 +48,7 @@ Comme tout outil automatisant au maximum la tâche à réaliser, COLLECT-scanner
 
 **En entrée**
 
-Pour l’instant, seul le format CSV est supporté.
+Pour l’instant, seul le format CSV est supporté. L'encodage doit être en UTF-8.
 
 **En sortie**
 
@@ -155,7 +155,7 @@ Le schema (pattern) de chemin d’accès. Définit à la fois le chemin d’acc�
 
 Permet de découper le nom du fichier et extraire le nom de la table à cibler. Voir les [conventions de nommage](#conventions-de-nommage)
 
-*Ex. : *
+*Ex. :*
 
 + *meteo_pluiesquot--user1-160222_1228.csv -> meteo_pluiesquot*
 

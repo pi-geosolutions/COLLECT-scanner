@@ -1,9 +1,11 @@
 package scanner.model;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -37,7 +39,8 @@ public class CsvContent {
 	public void readFile(File file) {
 		this.file=file;
 		try {
-			CSVReader reader = new CSVReader(new FileReader(file), csv_separator, csv_quotechar, csv_skiplines);
+			InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
+			CSVReader reader = new CSVReader(isr, csv_separator, csv_quotechar, csv_skiplines);
 			List<String[]> content = reader.readAll();
 
 			// format from List<String[]> to List<List<String>>
