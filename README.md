@@ -25,7 +25,7 @@ COLLECT-scanner est un des composants de cette solution.
 Compiler avec maven : 
  `mvn package`
  
- Vous pouvez aussi télécharger le binaire (jar) : [COLLECT-scanner-1.0.0-SNAPSHOT.jar](http://depots.pigeo.fr/jean/COLLECT-scanner-1.0.0-SNAPSHOT.jar)
+ Vous pouvez aussi télécharger le binaire (jar) : [COLLECT-scanner-1.0.1-SNAPSHOT.jar](http://depots.pigeo.fr/jean/COLLECT-scanner-1.0.1-SNAPSHOT.jar)
 
 ## Fonctionnalités
 
