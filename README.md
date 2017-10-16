@@ -202,9 +202,9 @@ Nombre de lignes en début de fichier à sauter. Par exemple s’il y avait des 
 
 Ne pas publier certains champs (ici, la colonne exported)
 
-**parsing.locale**=`fr-FR`
+**parsing.locale**=`fr_FR`
 
-La locale utilisée. Sert pour la lecture des données numérique notamment : dans la locale fr-FR, un réel s’écrira 17,53 alors que dans la locale en-US, par exemple, le même réel s’écrira 17.53.
+La locale utilisée. Sert pour la lecture des données numérique notamment : dans la locale fr\_FR, un réel s’écrira 17,53 alors que dans la locale en\_US, par exemple, le même réel s’écrira 17.53.  Par défaut à en\_US.
 
 **jdbc.driver**=`org.postgresql.Driver`
 
@@ -231,6 +231,10 @@ Ex. : fichier meteo_pluiesquot--user1--160222_1228.csv -> table c_meteo_pluiesqu
 Autorise (`true`) ou non (`false`) la fcontion d'update sur les données. S'il est à true et que les fichiers CSV contiennent des données dont les identifiants sont déjà dans la table de la base de données, ceux-ci seront mis à jour (les anciens enregistrements seront remplacés par les nouvelles valeurs du fichier).
 S'il est à false, seules des données nouvelles seront acceptées, i.e. avec un identifiant ne figurant pas déjà dans la base de données : dans le cas contraire, une erreur sera retournée et le fichier ne sera pas traité.
 Si ce paramètre est à false, alors même des fichiers dont le schema de nommage précise des clefs primaires (voir [conventions de nommage](#conventions-de-nommage)) ne seront pas éligible pour l'update. 
+
+**db.locale**=`fr_FR`
+
+Définit la locale à utiliser dans la DB. Important, notamment pour la reconnaissance des dates. Par défaut à en\_US.
 
 **logging.file**=`/home/jean/logs/collect/scanner/scanner.log`
 
