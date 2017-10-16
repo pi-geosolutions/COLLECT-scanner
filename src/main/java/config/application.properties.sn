@@ -3,8 +3,8 @@ spring.main.web_environment=false
 spring.main.banner_mode=log
 
 #Input config
-dir.path=/home/jean/fast/dev/RiMaP/collect/data/dgre/
-file.pattern=**/files/*_collect/*.csv
+dir.path=/home/jean/fast/dev/RiMaP/collect/data/meteo
+file.pattern=**/files/collect/*.csv
 file.partsSeparator=--
 #Accepts 'delete', 'rename' or 'archive'
 #file.postPublishPolicy=archive
@@ -17,20 +17,19 @@ file.renameExtension=.done
 csv.separator=;
 csv.quotechar="
 csv.skiplines=0
-csv.ignoreFields=
+csv.ignoreFields=exported
 
 #Parsing
-parsing.locale=fr_FR
+parsing.locale=fr-FR
 
 #Output config
 jdbc.driver=org.postgresql.Driver
-jdbc.url=jdbc:postgresql://localhost:5432/collect
+jdbc.url=jdbc:postgresql://localhost:5432/sn_risk_geodata
 jdbc.user=collect
 jdbc.password=collect
 db.schema=collect
 db.collectTablePrefix=c_
 db.updatable=true
-db.locale=fr_FR
 
 #Logging
 logging.file=scanner.log

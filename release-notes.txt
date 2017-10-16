@@ -1,0 +1,14 @@
+1.1.0
+-----
+- UPSERT functionality has been updated. It now uses postgresql 9.5+ UPSERT feature 
+(INSERT ... ON CONFLICT UPDATE) and is now, thus, only available when using 
+postgresql 9.5+ (if using older postgresql BD or other DB, you should unactivate updates) 
+
+1.0.1
+-----
+- Supports null values
+- trims whitespaces around values
+
+1.0.0
+-----
+First stable release.
