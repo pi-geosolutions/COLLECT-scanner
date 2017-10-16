@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,13 @@ public class PostgresqlPublisher implements DbPublisher {
 
 	@Value("${parsing.locale}")
 	private String parsing_locale;
+	
+	@Value("${db.locale}")
+	private String db_locale;
 
 	@Value("${db.fields.ignorecase:false}")
 	private boolean ignorefieldscase;
+	
 	@Value("${db.schema:public}")
 	private String db_schema;
 
@@ -45,7 +50,7 @@ public class PostgresqlPublisher implements DbPublisher {
 		this.headers = headers;
 
 		// build complete tablename
-		tablename = "\"" + db_schema + "\".\"" + tablename + "\"";
+		tablename = getFullTablename(tablename);
 		for (List<String> row : data) {
 			String req = " INSERT INTO " + tablename + "(";
 			for (String header : headers) {
@@ -93,7 +98,7 @@ public class PostgresqlPublisher implements DbPublisher {
 		this.headers = headers;
 
 		// build complete tablename
-		tablename = "\"" + db_schema + "\".\"" + tablename + "\"";
+		tablename = getFullTablename(tablename);
 		for (List<String> row : data) {
 			String req = "WITH update_items AS (UPDATE " + tablename + " SET ";
 			for (String header : headers) {
@@ -133,6 +138,10 @@ public class PostgresqlPublisher implements DbPublisher {
 	}
 
 	private String getValue(String value, int index) throws ParseException {
+		value = value.trim();
+		if (value.isEmpty()) {
+			return null;
+		}
 		if (this.fieldsMapper != null) {
 			int type = this.getValueType(value, index);
 			if (type != 0) {
@@ -158,12 +167,17 @@ public class PostgresqlPublisher implements DbPublisher {
 		case Types.DOUBLE:
 			Locale locale = Locale.US;
 			if (!this.parsing_locale.isEmpty()) {
-				locale = Locale.forLanguageTag(parsing_locale);
+				locale = LocaleUtils.toLocale(parsing_locale);
+			}
+			Locale dblocale = Locale.US;
+			if (!this.db_locale.isEmpty()) {
+				dblocale = LocaleUtils.toLocale(db_locale);
 			}
 			logger.debug("Parsing " + value + " as float/double using locale " + locale.toString());
 			NumberFormat numberFormat = NumberFormat.getInstance(locale);
 			Number nb = numberFormat.parse(value);
-			value =  String.valueOf(nb.doubleValue());
+			NumberFormat dbnumberFormat = NumberFormat.getInstance(dblocale);
+			value = dbnumberFormat.format(nb.doubleValue());
 			break;
 		case java.sql.Types.DATE:
 		case java.sql.Types.TIME:
@@ -193,8 +207,20 @@ public class PostgresqlPublisher implements DbPublisher {
 	private Map<String, SQLColumn> loadTableMetadata(String tablename) {
 		// we don't need to get real data, we just need a query, to get the
 		// metadata
-		String simplequery = "SELECT * FROM " + tablename + " LIMIT 1;";
+		String simplequery = "SELECT * FROM " + getFullTablename(tablename) + " LIMIT 1;";
 		return jdbcTemplate.query(simplequery, new ResultsetMetadataExtractor(ignorefieldscase));
+	}
+	
+	/**
+	 * Buils full & escaped tablename : appends the schema and double quotes
+	 * @param tablename
+	 * @return
+	 */
+	private String getFullTablename(String tablename) {
+		if (this.db_schema.isEmpty()) {
+			return "\"" + tablename + "\"";
+		}
+		return "\"" + db_schema + "\".\"" + tablename + "\"";
 	}
 
 }
