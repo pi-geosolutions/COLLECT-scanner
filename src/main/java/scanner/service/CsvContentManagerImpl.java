@@ -39,10 +39,10 @@ public class CsvContentManagerImpl implements CsvContentManager {
 
 	@Override
 	@Transactional
-	public boolean publish(CsvContent csv, String tablename, List<String> keys) {
+	public boolean publish(CsvContent csv, String tablename, List<String> keys, boolean forceUpdate) {
 		try {
-			UpsertResult res = publisher.publish(tablename, keys, csv.getFieldNames(), csv.getData());
-			logger.info(res.toString());
+			UpsertResult res = publisher.publish(tablename, keys, csv.getFieldNames(), csv.getData(),forceUpdate);
+			logger.info(res.toString(forceUpdate));
 			return true;
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

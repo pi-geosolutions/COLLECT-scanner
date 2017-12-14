@@ -11,5 +11,5 @@ import scanner.dao.utils.UpsertResult;
 @Component
 public interface DbPublisher {
 	public int publish(String tablename, List<String> headers, List<List<String>> data) throws ParseException ;
-	public UpsertResult publish(String tablename, List<String> primarykeys, List<String> headers, List<List<String>> data) throws ParseException ;
+	public UpsertResult publish(String tablename, List<String> primarykeys, List<String> headers, List<List<String>> data, boolean forceUpdate) throws ParseException ;
 }

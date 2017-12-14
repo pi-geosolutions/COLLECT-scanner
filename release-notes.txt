@@ -1,3 +1,12 @@
+1.1.1
+-----
+- inserts or updates have been made transactional ("all or nothing").
+- added a "softUpdate" feature : not recommended but sometimes handy. Should follow update 
+file naming convention + end by softUpdate.csv to be activated
+- file not published error message is more explicit and verbose
+- write a "light log" in each scanned directory (where files have been processed)
+in order to give the end user a clue wheter or not it failed and why
+
 1.1.0
 -----
 - UPSERT functionality has been updated. It now uses postgresql 9.5+ UPSERT feature 

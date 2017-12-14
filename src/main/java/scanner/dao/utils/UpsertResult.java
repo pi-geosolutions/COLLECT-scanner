@@ -28,8 +28,11 @@ public class UpsertResult {
 		}
 		
 	}
-	public String toString() {
-		return "Upserts results: "+inserts +" inserted, "+updates+" updated";
+	public String toString(boolean updated) {
+		String insrt = inserts +" inserted";
+		String updt = updated?updates+" updated":updates + " already published and potentially conflicting records kept unchanged";
+		String mesg = "Upserts results: "+insrt+", "+updt;
+		return mesg;
 	}
 
 	/**
