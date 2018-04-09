@@ -1,3 +1,9 @@
+1.1.2
+-----
+- supports boolean SQL type
+- supports multiple schemas: tables can be spread over several schemas. Declare the
+schemas list as a comma-separated list in the db.schema config param
+
 1.1.1
 -----
 - inserts or updates have been made transactional ("all or nothing").

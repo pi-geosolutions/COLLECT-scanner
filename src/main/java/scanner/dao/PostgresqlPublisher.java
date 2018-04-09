@@ -45,6 +45,8 @@ public class PostgresqlPublisher implements DbPublisher {
 	@Override
 	@Transactional
 	public int publish(String tablename, List<String> headers, List<List<String>> data) throws ParseException {
+		this.setSchemas();
+		
 		int results = 0;
 
 		// Load table metadata (for proper field parsing)
@@ -66,11 +68,24 @@ public class PostgresqlPublisher implements DbPublisher {
 		return results;
 
 	}
+	
+	/* 
+	 * Set search_path: allows to dispatch the tables over multiple schemas (db_schema would
+	 * then  be like 'collect,odk1'
+	 */
+	private void setSchemas() {
+
+		if (!this.db_schema.isEmpty()) {
+			jdbcTemplate.execute("SET search_path to " + this.db_schema +";");
+		}
+	}
 
 	@Override
 	@Transactional
 	public UpsertResult publish(String tablename, List<String> primarykeys, List<String> headers,
 			List<List<String>> data, boolean forceUpdate) throws ParseException {
+		this.setSchemas();
+		
 		// applying new postgresql 9.5+ "upsert" model
 		//
 		int i;
@@ -223,10 +238,13 @@ public class PostgresqlPublisher implements DbPublisher {
 		return col.getTypeCode();
 	}
 
+	@Transactional
 	private Map<String, SQLColumn> loadTableMetadata(String tablename) {
 		// we don't need to get real data, we just need a query, to get the
 		// metadata
+
 		String simplequery = "SELECT * FROM " + getFullTablename(tablename) + " LIMIT 1;";
+		this.setSchemas();
 		return jdbcTemplate.query(simplequery, new ResultsetMetadataExtractor(ignorefieldscase));
 	}
 
@@ -237,10 +255,11 @@ public class PostgresqlPublisher implements DbPublisher {
 	 * @return
 	 */
 	private String getFullTablename(String tablename) {
-		if (this.db_schema.isEmpty()) {
-			return "\"" + tablename + "\"";
-		}
-		return "\"" + db_schema + "\".\"" + tablename + "\"";
+//		if (this.db_schema.isEmpty()) {
+//			return "\"" + tablename + "\"";
+//		}
+//		return "\"" + db_schema + "\".\"" + tablename + "\"";
+		return tablename;
 	}
 
 	/**
