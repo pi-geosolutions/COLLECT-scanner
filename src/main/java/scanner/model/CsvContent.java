@@ -3,7 +3,6 @@ package scanner.model;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import com.opencsv.CSVReader;
 public class CsvContent {
 
 	private static final Logger logger = LoggerFactory.getLogger(CsvContent.class);
-	
+
 	private List<String> headers;
 	private List<List<String>> data = new ArrayList<List<String>>();
 
@@ -28,7 +27,6 @@ public class CsvContent {
 	private int csv_skiplines;
 	private List<String> ignoreValues;
 	private File file;
-	
 
 	public CsvContent(char csv_separator, char csv_quotechar, int csv_skiplines) {
 		this.csv_separator = csv_separator;
@@ -37,11 +35,12 @@ public class CsvContent {
 	}
 
 	public void readFile(File file) {
-		this.file=file;
+		this.file = file;
 		try {
 			InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
 			CSVReader reader = new CSVReader(isr, csv_separator, csv_quotechar, csv_skiplines);
 			List<String[]> content = reader.readAll();
+			reader.close();
 
 			// format from List<String[]> to List<List<String>>
 			Iterator<String[]> it = content.iterator();
@@ -83,17 +82,17 @@ public class CsvContent {
 		data.remove(i);
 		return row;
 	}
-	
+
 	public List<String> getNextRow() {
 		return this.popRow(0);
 	}
-	
+
 	public List<List<String>> getData() {
 		return this.data;
 	}
-	
+
 	public String filename2tablename() {
-		String tablename="";
+		String tablename = "";
 		return tablename;
 	}
 
@@ -101,7 +100,7 @@ public class CsvContent {
 	 * For debugging purpose
 	 */
 	public String print() {
-		String out = "Reading CSV from file "+file.getName()+"\n \t\t";
+		String out = "Reading CSV from file " + file.getName() + "\n \t\t";
 		if (headers == null) {
 			out += "headers are null";
 		} else {
@@ -118,7 +117,7 @@ public class CsvContent {
 			while (it.hasNext()) {
 				String[] line = it.next().toArray(new String[0]);
 				for (int i = 0; i < line.length; i++) {
-					//System.out.print(line[i] + ":");
+					// System.out.print(line[i] + ":");
 					out += line[i] + " | ";
 				}
 				out += "\n \t\t";
@@ -131,7 +130,7 @@ public class CsvContent {
 
 	public void setIgnoreValues(String csv_ignoreValues) {
 		this.ignoreValues = Arrays.asList(csv_ignoreValues.split(","));
-		if ((this.headers!=null) && (!this.headers.isEmpty())) {
+		if ((this.headers != null) && (!this.headers.isEmpty())) {
 			this.doIgnoreValues();
 		}
 	}
@@ -145,12 +144,12 @@ public class CsvContent {
 	}
 
 	private void purgeValue(String name) {
-		logger.debug("purging value "+name);
+		logger.debug("purging value " + name);
 		int index = headers.indexOf(name);
-		if (index>=0) {
+		if (index >= 0) {
 			// Remove from headers list
 			headers.remove(name);
-			
+
 			// remove values too, for each line
 			Iterator<List<String>> it = data.iterator();
 			while (it.hasNext()) {
@@ -158,6 +157,5 @@ public class CsvContent {
 			}
 		}
 
-		
 	}
 }
