@@ -18,14 +18,14 @@ Une solution s’appuyant sur l’application open-source Owncloud, permettant d
 
 COLLECT-scanner est un des composants de cette solution. 
 
-**Prérequis :** Cet outil nécessite Java 7 ou ultérieur.
+**Prérequis :** Cet outil nécessite Java 8 ou ultérieur.
 
 ## Compiler
 
 Compiler avec maven : 
- `mvn package`
+ `mvn clean package`
  
- Vous pouvez aussi télécharger le binaire (jar) : [COLLECT-scanner-1.1.0-SNAPSHOT.jar](http://depots.pigeo.fr/jean/COLLECT-scanner-1.1.0-SNAPSHOT.jar)
+ Vous pouvez aussi télécharger le binaire (jar) : [COLLECT-scanner-1.1.2-SNAPSHOT.jar](http://depots.pigeo.fr/jean/COLLECT-scanner-1.1.2-SNAPSHOT.jar)
 
 ## Fonctionnalités
 
@@ -218,7 +218,7 @@ Configuration JDBC (connexion à la base de données)
 
 **db.schema**=`collect`
 
-Schema dans lequel on cherche les tables.
+Schema dans lequel on cherche les tables. Si les tables sont réparties dans plusieurs schemas, on peut fournir la liste des schemas (l'application définit un search_path), par exemple `collect,odk1`. Attention à ne pas avoir des tables du même nom dans chacun des deux (ou plus) schemas. *L'ordre de résolution est l'ordre de la liste des schemas.*
 
 **db.collectTablePrefix**=`c_`
 

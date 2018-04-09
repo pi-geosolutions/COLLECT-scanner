@@ -242,9 +242,7 @@ public class PostgresqlPublisher implements DbPublisher {
 	private Map<String, SQLColumn> loadTableMetadata(String tablename) {
 		// we don't need to get real data, we just need a query, to get the
 		// metadata
-
 		String simplequery = "SELECT * FROM " + getFullTablename(tablename) + " LIMIT 1;";
-		this.setSchemas();
 		return jdbcTemplate.query(simplequery, new ResultsetMetadataExtractor(ignorefieldscase));
 	}
 
