@@ -160,6 +160,11 @@ public class PostgresqlPublisher implements DbPublisher {
 		case Types.DECIMAL:
 			logger.debug("Parsing " + value + " as integer value");
 			break;
+		case Types.BOOLEAN:
+			logger.debug("Trying to parse" + value + " as boolean value");
+			//Escape integer value between quotes
+			value="'"+value+"'";
+			break;
 		case Types.REAL:
 		case Types.FLOAT:
 		case Types.DOUBLE:
