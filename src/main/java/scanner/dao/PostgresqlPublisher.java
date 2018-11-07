@@ -257,7 +257,7 @@ public class PostgresqlPublisher implements DbPublisher {
 //			return "\"" + tablename + "\"";
 //		}
 //		return "\"" + db_schema + "\".\"" + tablename + "\"";
-		return tablename;
+		return "\"" + tablename + "\"";
 	}
 
 	/**

@@ -88,7 +88,7 @@ public class ScannerImpl implements Scanner {
 			boolean successfulRead = this.readFile(file);
 			if (successfulRead) {
 				this.removeFile(file);
-				String msg = "file.getName() successfully processed and archived";
+				String msg = file.getName() + "successfully processed and archived";
 				logmsg(msg, dir);
 			} else {
 				
